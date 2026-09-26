@@ -853,7 +853,7 @@
       <div class="header-right-area">
         <div class="status-badge">
           <span class="status-dot"></span>
-          <span class="status-text">Cloud Sync: Terhubung (ntfy.sh)</span>
+          <span class="status-text">Local Sync: Aktif (Offline Mode)</span>
         </div>
         <img src="logo.png" alt="Logo" class="admin-brand-logo" title="Phoenix Broadcast Premium Logo">
       </div>
@@ -1093,8 +1093,8 @@
        ========================================================================== -->
   <script>
     // Topik cloud sync unik untuk user agar tidak bertabrakan dengan user ntfy.sh lain
-    const SYNC_TOPIC = "obs_ticker_hudi_558";
-    const SYNC_URL = `https://ntfy.sh/${SYNC_TOPIC}`;
+    // Mode Offline Murni
+    
 
     // SINTESIS SUARA DARURAT SECARA MANDIRI (NATIVE WEB AUDIO API)
     function playAlertChime() {
@@ -1303,25 +1303,7 @@
 
       // KONEKSI CLOUD SYNC INSTAN VIA SSE (ntfy.sh)
       function initCloudSync() {
-        // SSE (Server-Sent Events) bekerja secara bawaan di semua modern browser & OBS CEF!
-        const eventSource = new EventSource(`${SYNC_URL}/sse`);
-        
-        eventSource.onmessage = (event) => {
-          try {
-            const payload = JSON.parse(event.data);
-            if (payload && payload.message) {
-              const settings = JSON.parse(payload.message);
-              applySettings(settings);
-              localStorage.setItem('obs_ticker_settings', JSON.stringify(settings));
-            }
-          } catch (e) {
-            console.error("Gagal membaca pesan cloud sync:", e);
-          }
-        };
-
-        eventSource.onerror = () => {
-          console.warn("Koneksi Cloud terputus, mencoba menghubungkan kembali...");
-        };
+        console.log("Mode offline lokal. Sinkronisasi lewat memori internal OBS.");
       }
 
       function init() {
@@ -1438,11 +1420,7 @@
         // 1. Broadcast Lokal (BroadcastChannel) - Super Instan Offline!
         channel.postMessage({ type: 'UPDATE_SETTINGS', data: state });
 
-        // 2. Push ke ntfy.sh (Selesai dalam 0.05 detik tanpa server lokal)
-        fetch(SYNC_URL, {
-          method: 'POST',
-          body: JSON.stringify(state)
-        }).catch(err => console.warn("Pesan cloud tertunda, tetap menyimpan secara lokal.", err));
+        // Mode offline tidak mengirim data ke server luar.
       }
 
       
@@ -1469,7 +1447,7 @@
                 <input type="text" id="url-media-${lowerPos}" class="small-input" placeholder="Ketik nama file (contoh: logo.png)">
                 <small style="color:var(--text-muted); font-size:12px; margin-top:5px; display:block;">
                   * Taruh file gambar/video di dalam folder yang sama, lalu ketik nama filenya di atas (contoh: <b>logo.png</b> atau <b>animasi.webm</b>). 
-                  Jangan gunakan tombol upload karena batas sinkronisasi OBS (ntfy.sh) akan penuh.
+                  File akan diload secara offline langsung oleh OBS.
                 </small>
               </div>
               <div class="settings-grid">
