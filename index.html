@@ -1465,9 +1465,12 @@
                 <label for="check-media-${lowerPos}">Tampilkan</label>
               </div>
               <div class="input-group">
-                <label>File Media (Upload atau URL)</label>
-                <input type="file" id="file-media-${lowerPos}" accept="image/*,video/*" class="small-input" style="margin-bottom: 8px;">
-                <input type="text" id="url-media-${lowerPos}" class="small-input" placeholder="Atau masukkan URL / Base64">
+                <label>Nama File / URL URL Media</label>
+                <input type="text" id="url-media-${lowerPos}" class="small-input" placeholder="Ketik nama file (contoh: logo.png)">
+                <small style="color:var(--text-muted); font-size:12px; margin-top:5px; display:block;">
+                  * Taruh file gambar/video di dalam folder yang sama, lalu ketik nama filenya di atas (contoh: <b>logo.png</b> atau <b>animasi.webm</b>). 
+                  Jangan gunakan tombol upload karena batas sinkronisasi OBS (ntfy.sh) akan penuh.
+                </small>
               </div>
               <div class="settings-grid">
                 <div class="setting-group">
@@ -1498,7 +1501,6 @@
           
           const check = document.getElementById(`check-media-${lowerPos}`);
           if (!check) return;
-          const fileInput = document.getElementById(`file-media-${lowerPos}`);
           const urlInput = document.getElementById(`url-media-${lowerPos}`);
           const sizeRange = document.getElementById(`range-size-${lowerPos}`);
           const opacityRange = document.getElementById(`range-opacity-${lowerPos}`);
@@ -1523,19 +1525,7 @@
             broadcastState();
           });
           
-          fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (event) => {
-              state[stateKey].url = event.target.result;
-              state[stateKey].type = file.type.startsWith('video') ? 'video' : 'image';
-              urlInput.value = 'File tersimpan (Base64)';
-              broadcastState();
-            };
-            reader.readAsDataURL(file);
-          });
-        });
+});
       }
 
       function renderMediaElement(containerId, data) {
